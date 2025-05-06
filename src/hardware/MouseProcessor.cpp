@@ -48,24 +48,16 @@ bool MouseProcessor::ReadMouseData(MouseData& data) {
     memset(&ev, 0, sizeof(ev));
     memset(&data, 0, sizeof(MouseData));
 
-    while (true) {
-        ssize_t bytesRead = read(this->deviceFd, &ev, sizeof(ev));
-        std::cout << bytesRead << std::endl;
+    ssize_t bytesRead = read(this->deviceFd, &ev, sizeof(ev));
 
-        if (bytesRead > 0) {
-            ProcessEvent(ev, data);
-        }
-        else {
-            //std::cout << strerror(errno) << std::endl;
-        }
-        
+    if (bytesRead > 0) {
+        ProcessEvent(ev, data);
     }
 
     return true;
 }
 
 void MouseProcessor::ProcessEvent(const struct input_event& ev, MouseData& data) {
-    std::cout << ev.type << std::endl;
     if (ev.type == EV_REL) {
         if (ev.code == REL_X) {
             data.deltaX += ev.value;

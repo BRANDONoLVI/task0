@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 int main() {    
-    MouseProcessor processor("/dev/input/mouse0");
+    MouseProcessor processor("/dev/input/event5");
     if (!processor.Initialize()) return EXIT_FAILURE;
 
     std::cout << "MouseProcessor initialized" << std::endl;
