@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "cstdint": "cpp",
+        "iostream": "cpp",
+        "ostream": "cpp",
+        "tuple": "cpp",
+        "cstring": "cpp",
+        "numbers": "cpp"
+    }
+}
