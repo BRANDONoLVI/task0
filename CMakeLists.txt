@@ -5,7 +5,7 @@ project(Task0 VERSION 0.0.0)
 find_package(X11 REQUIRED)
 find_package(sdbus-c++ REQUIRED)
 
-add_executable(Task0 src/main.cpp src/hardware/MouseProcessor.cpp)
+add_executable(Task0 src/main.cpp src/hardware/MouseProcessor.cpp src/processing/MouseService.h)
 target_include_directories(Task0 PUBLIC
     "${PROJECT_BINARY_DIR}"
     "${PROJECT_SOURCE_DIR}/include"
