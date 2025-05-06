@@ -12,6 +12,7 @@ class MouseService {
 
     private:
         void RegisterInterface();
+        void MouseService::GetMouseState(sdbus::MethodCall& methodCall);
 
         std::shared_ptr<sdbus::IConnection> connection;
         std::unique_ptr<sdbus::IObject> object;
