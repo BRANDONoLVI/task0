@@ -6,11 +6,17 @@
 
 class MouseService {
     public:
-        MouseService(*MouseProcessor);
+        MouseService(std::shared_ptr<MouseProcessor> p);
+        ~MouseService();
         void Run();
 
     private:
         void RegisterInterface();
+
+        std::shared_ptr<sdbus::IConnection> connection;
+        std::unique_ptr<sdbus::IObject> object;
+        std::shared_ptr<MouseProcessor> processor;
+        sdbus::ObjectPath* path;
 
 };
 

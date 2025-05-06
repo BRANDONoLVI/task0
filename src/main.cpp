@@ -1,15 +1,22 @@
 #include "hardware/MouseProcessor.h"
+#include "processing/MouseService.h"
+
 #include "common/MouseData.h"
 #include <iostream>
 #include <unistd.h>
 
 int main() {    
-    MouseProcessor processor("/dev/input/event5");
-    if (!processor.Initialize()) return EXIT_FAILURE;
+    std::shared_ptr<MouseProcessor> processor = std::make_shared<MouseProcessor>("/dev/input/event5");
+    if (!processor->Initialize()) return EXIT_FAILURE;
 
     std::cout << "MouseProcessor initialized" << std::endl;
-    MouseData data;
 
+    MouseService service(processor);
+    service.Run();
+
+    /*
+    MouseData data;
+    
     while (true) {
         processor.ReadMouseData(data);
         if (data.deltaX || data.deltaY) {
@@ -25,5 +32,7 @@ int main() {
     }
 
     processor.Shutdown();
+    */
+   
     return EXIT_SUCCESS;
 }
