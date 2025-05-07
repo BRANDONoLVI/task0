@@ -1,18 +1,62 @@
 package main
 
 import (
-    "log"
-    "mouse-service/v1/internal/dbus"
-    "mouse-service/v1/internal/hardware"
+	"fmt"
+	"github.com/godbus/dbus/v5"
+	"github.com/godbus/dbus/v5/introspect"
+	"log"
+)
+
+type MouseService struct{}
+
+func (m *MouseService) GetMouseState() (int32, int32, bool, bool, *dbus.Error) {
+	// stub values for now
+	return 10, 5, true, false, nil
+}
+
+const (
+	serviceName = "org.example.Mouse"
+	objectPath  = "/org/example/Mouse"
+	ifaceName   = "org.example.Mouse"
 )
 
 func main() {
-	// cat /proc/bus/input/devices
-    processor := hardware.NewMouseProcessor("/dev/input/event5") // Replace with correct device
-    if err := processor.Initialize(); err != nil {
-        log.Fatal("Failed to initialize mouse processor:", err)
-    }
+	conn, err := dbus.ConnectSessionBus()
+	if err != nil {
+		log.Fatalf("Failed to connect to session bus: %v", err)
+	}
+	defer conn.Close()
 
-    service := dbus.NewMouseService(processor)
-    service.Run()
+	reply, err := conn.RequestName(serviceName, dbus.NameFlagDoNotQueue)
+	if err != nil || reply != dbus.RequestNameReplyPrimaryOwner {
+		log.Fatalf("Failed to request name: %v", err)
+	}
+
+	mouse := &MouseService{}
+	conn.Export(mouse, objectPath, ifaceName)
+
+	node := &introspect.Node{
+		Name: "/",
+		Interfaces: []introspect.Interface{
+			introspect.IntrospectData,
+			{
+				Name: ifaceName,
+				Methods: []introspect.Method{
+					{
+						Name: "GetMouseState",
+						Args: []introspect.Arg{
+							{Name: "dx", Type: "i"},
+							{Name: "dy", Type: "i"},
+							{Name: "left", Type: "b"},
+							{Name: "right", Type: "b"},
+						},
+					},
+				},
+			},
+		},
+	}
+	conn.Export(introspect.NewIntrospectable(node), objectPath, "org.freedesktop.DBus.Introspectable")
+
+	fmt.Println("Mouse service is running.")
+	select {} // run forever
 }

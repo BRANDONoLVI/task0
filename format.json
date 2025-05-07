@@ -1,0 +1,11 @@
+{
+    "timestamp": 1715023380,
+    "device_id": "mouse_001",
+    "position": {
+      "x": 245,
+      "y": 480
+    },
+    "gesture": "click",
+    "action": "select",
+    "context": "window_manager"
+  }
