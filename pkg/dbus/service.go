@@ -1,8 +1,11 @@
 package dbus
 
 import (
-    "fmt"
-    "github.com/godbus/dbus/v5"
+	"fmt"
+	"mouse-service/v1/internal/action"
+	"os"
+
+	"github.com/godbus/dbus/v5"
 	"github.com/godbus/dbus/v5/introspect"
 )
 
@@ -69,13 +72,14 @@ func ExecuteAction(action string) error {
 func (a *ActionService) ReceiveGesture(gesture string) *dbus.Error {
     fmt.Println("=== ReceiveGesture method called with gesture:", gesture)
     
-    mappedAction, err := MapGestureToAction(gesture)
+    mappedAction, err := action.MapGestureToAction(gesture)
+
     if err != nil {
         fmt.Println("Error mapping gesture:", err)
         return dbus.MakeFailedError(err)
     }
 
-    err = ExecuteAction(mappedAction)
+    err = action.ExecuteAction(mappedAction)
     if err != nil {
         fmt.Println("Error executing action:", err)
         return dbus.MakeFailedError(err)
@@ -86,28 +90,32 @@ func (a *ActionService) ReceiveGesture(gesture string) *dbus.Error {
 }
 
 func RegisterActionService() (*dbus.Conn, error) {
+    fmt.Println("Starting ActionService debug version...")
+
     conn, err := dbus.SessionBus()
     if err != nil {
-        return nil, fmt.Errorf("failed to connect to D-Bus: %v", err)
+        fmt.Fprintf(os.Stderr, "Failed to connect to session bus: %v\n", err)
+        os.Exit(1)
     }
 
+    fmt.Println("Requesting D-Bus name: com.example.ActionService")
     reply, err := conn.RequestName("com.example.ActionService", dbus.NameFlagDoNotQueue)
     if err != nil {
-        return nil, fmt.Errorf("failed to request D-Bus name: %v", err)
+        fmt.Fprintf(os.Stderr, "Failed to request D-Bus name: %v\n", err)
+        os.Exit(1)
     }
+    fmt.Printf("RequestName reply: %v (1=Primary owner, 2=In queue, 3=Exists, 4=Already owner)\n", reply)
 
-    fmt.Printf("Action service request name reply: %v\n", reply)
-
-    // Create and export the service
     service := &ActionService{}
     
-    // Export the service interface
+    fmt.Println("Exporting ActionService to /com/example/ActionService")
     err = conn.Export(service, "/com/example/ActionService", "com.example.ActionService")
     if err != nil {
-        return nil, fmt.Errorf("failed to export service: %v", err)
+        fmt.Fprintf(os.Stderr, "Failed to export ActionService: %v\n", err)
+        os.Exit(1)
     }
     
-    // Create introspection data
+    fmt.Println("Creating introspection data...")
     introspectData := &introspect.Node{
         Name: "/com/example/ActionService",
         Interfaces: []introspect.Interface{
@@ -127,12 +135,33 @@ func RegisterActionService() (*dbus.Conn, error) {
     }
     
     // Export the introspection interface
+    fmt.Println("Exporting introspection interface...")
     err = conn.Export(introspect.NewIntrospectable(introspectData), "/com/example/ActionService", "org.freedesktop.DBus.Introspectable")
     if err != nil {
-        return nil, fmt.Errorf("failed to export introspection: %v", err)
+        fmt.Fprintf(os.Stderr, "Failed to export introspection: %v\n", err)
+        os.Exit(1)
     }
     
-    fmt.Println("Action Service registered on D-Bus!")
+    fmt.Println("Action Service registered on D-Bus successfully!")
+    fmt.Println("Object path: /com/example/ActionService")
+    fmt.Println("Interface: com.example.ActionService")
+    fmt.Println("Method: ReceiveGesture(string)")
+    fmt.Println("Waiting for D-Bus calls. Press Ctrl+C to exit.")
+    
+    fmt.Println("\nTesting introspection...")
+    obj := conn.Object("com.example.ActionService", "/com/example/ActionService")
+    call := obj.Call("org.freedesktop.DBus.Introspectable.Introspect", 0)
+    if call.Err != nil {
+        fmt.Println("Failed to get introspection data:", call.Err)
+    } else {
+        var xmlData string
+        call.Store(&xmlData)
+        fmt.Println("Introspection data available.")
+    }
+    
+    fmt.Println("\nTo test, run this command in another terminal:")
+    fmt.Println("dbus-send --session --type=method_call --dest=com.example.ActionService" +
+               " /com/example/ActionService com.example.ActionService.ReceiveGesture string:\"click\"")
 
     return conn, nil
 }
