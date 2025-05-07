@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "go build -a cmd/server/main.go",
-    "start": "pnpm build && ./main",
+    "start": "pnpm build && sudo ./main",
     "test:click": "dbus-send --session --type=method_call --dest=org.luxvitae.ActionService /org/luxvitae/ActionService org.luxvitae.ActionService.ReceiveGesture string:\"click\"",
     "test:move": "dbus-send --session --type=method_call --dest=org.luxvitae.ActionService /org/luxvitae/ActionService org.luxvitae.ActionService.ReceiveGesture string:\"move\"",
     "test:minimize": "dbus-send --session --type=method_call --dest=org.luxvitae.ActionService /org/luxvitae/ActionService org.luxvitae.ActionService.ReceiveGesture string:\"minimize\"",
