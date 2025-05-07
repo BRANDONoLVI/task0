@@ -59,15 +59,6 @@ func RegisterMouseService() (*dbus.Conn, error) {
 }
 
 // Actions
-func MapGestureToAction(gesture string) (string, error) {
-    fmt.Println("Mapping gesture:", gesture)
-    return "action_" + gesture, nil
-}
-
-func ExecuteAction(action string) error {
-    fmt.Println("Executing action:", action)
-    return nil
-}
 
 func (a *ActionService) ReceiveGesture(gesture string) *dbus.Error {
     fmt.Println("=== ReceiveGesture method called with gesture:", gesture)

@@ -12,11 +12,13 @@ type Action struct {
 
 func MapGestureToAction(gesture string) (Action, error) {
     fmt.Printf("Found an action: %s\n", gesture)
-
+     
+    
     actionMap := map[string]string{
         "click": "xdotool click 1", 
         "drag":  "xdotool mousedown 1", 
         "move":  "xdotool mousemove_relative -- 10 0",
+        "minimize": "xdotool getactivewindow windowminimize",
     }
 
     cmd, exists := actionMap[gesture]
