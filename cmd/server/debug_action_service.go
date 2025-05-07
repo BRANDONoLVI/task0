@@ -1,62 +1,15 @@
-package dbus
+package main
 
 import (
-    "os"
     "fmt"
+    "os"
+    "os/signal"
+    "syscall"
     "github.com/godbus/dbus/v5"
-	"github.com/godbus/dbus/v5/introspect"
+    "github.com/godbus/dbus/v5/introspect"
 )
 
-type MouseService struct {
-    conn *dbus.Conn
-}
-
-type ActionService struct{}
-
-func NewMouseService() (*MouseService, error) {
-    conn, err := dbus.SessionBus()
-    if err != nil {
-        return nil, fmt.Errorf("failed to connect to D-Bus: %v", err)
-    }
-
-    return &MouseService{conn: conn}, nil
-}
-	
-func (m *MouseService) SendMouseEvent(deviceID string, x, y int32, button string) {
-    obj := m.conn.Object("com.example.MouseService", "/com/example/MouseService")
-    call := obj.Call("com.example.MouseService.SendEvent", 0, deviceID, x, y, button)
-    
-    if call.Err != nil {
-        fmt.Println("Failed to send event:", call.Err)
-    }
-}
-
-func (m *MouseService) SendEvent(deviceID string, x int, y int, button string) *dbus.Error {
-    fmt.Printf("Mouse Event Received: Device=%s X=%d Y=%d Button=%s\n", deviceID, x, y, button)
-    return nil
-}
-
-func RegisterMouseService() (*dbus.Conn, error) {
-    conn, err := dbus.SessionBus()
-    if err != nil {
-        return nil, fmt.Errorf("failed to connect to D-Bus: %v", err)
-    }
-
-    _, err = conn.RequestName("com.example.MouseService", dbus.NameFlagDoNotQueue)
-    if err != nil {
-        return nil, fmt.Errorf("failed to request D-Bus name: %v", err)
-    }
-
-    service := &MouseService{}
-    conn.Export(service, "/com/example/MouseService", "com.example.MouseService")
-    conn.Export(introspect.Introspectable("/com/example/MouseService"), "/com/example/MouseService", "org.freedesktop.DBus.Introspectable")
-
-    fmt.Println("D-Bus service registered successfully!")
-
-    return conn, nil
-}
-
-// Actions
+// Simple action execution for testing
 func MapGestureToAction(gesture string) (string, error) {
     fmt.Println("Mapping gesture:", gesture)
     return "action_" + gesture, nil
@@ -67,6 +20,10 @@ func ExecuteAction(action string) error {
     return nil
 }
 
+// ActionService represents a D-Bus service for handling gestures
+type ActionService struct{}
+
+// ReceiveGesture is the D-Bus method for handling gestures
 func (a *ActionService) ReceiveGesture(gesture string) *dbus.Error {
     fmt.Println("=== ReceiveGesture method called with gesture:", gesture)
     
@@ -86,7 +43,7 @@ func (a *ActionService) ReceiveGesture(gesture string) *dbus.Error {
     return nil
 }
 
-func RegisterActionService() (*dbus.Conn, error) {
+func main() {
     fmt.Println("Starting ActionService debug version...")
 
     // Connect to the session bus
@@ -167,5 +124,9 @@ func RegisterActionService() (*dbus.Conn, error) {
     fmt.Println("dbus-send --session --type=method_call --dest=com.example.ActionService" +
                " /com/example/ActionService com.example.ActionService.ReceiveGesture string:\"swipe_up\"")
 
-    return conn, nil
+    // Handle signals for clean shutdown
+    c := make(chan os.Signal, 1)
+    signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+    <-c
+    fmt.Println("Shutting down...")
 }

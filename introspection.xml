@@ -1,0 +1,2 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+         "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd"><node name="/com/example/ActionService"><interface name="com.example.ActionService"><method name="ReceiveGesture"><arg name="gesture" type="s" direction="in"></arg></method></interface><interface name="org.freedesktop.DBus.Introspectable"><method name="Introspect"><arg name="out" type="s" direction="out"></arg></method></interface></node>
