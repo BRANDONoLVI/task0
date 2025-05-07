@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "go build cmd/server/main.go",
-    "start": "sudo go run cmd/server/main.go",
-    "test:click": "dbus-send --session --type=method_call --dest=com.example.ActionService /com/example/ActionService com.example.ActionService.ReceiveGesture string:\"click\"",
-    "test:move": "dbus-send --session --type=method_call --dest=com.example.ActionService /com/example/ActionService com.example.ActionService.ReceiveGesture string:\"move\""
+    "start": "pnpm build && ./main",
+    "test:click": "dbus-send --session --type=method_call --dest=org.luxvitae.ActionService /org/luxvitae/ActionService org.luxvitae.ActionService.ReceiveGesture string:\"click\"",
+    "test:move": "dbus-send --session --type=method_call --dest=org.luxvitae.ActionService /org/luxvitae/ActionService org.luxvitae.ActionService.ReceiveGesture string:\"move\""
   },
   "keywords": [],
   "author": "",
