@@ -19,7 +19,7 @@ func NewMouseService() (*MouseService, error) {
     return &MouseService{conn: conn}, nil
 }
 	
-func (m *MouseService) SendMouseEvent(deviceID string, x, y int, button string) {
+func (m *MouseService) SendMouseEvent(deviceID string, x, y int32, button string) {
     obj := m.conn.Object("com.example.MouseService", "/com/example/MouseService")
     call := obj.Call("com.example.MouseService.SendEvent", 0, deviceID, x, y, button)
     
