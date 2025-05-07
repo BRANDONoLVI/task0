@@ -15,7 +15,7 @@ type Gesture struct {
     }
 }
 
-// DetectGesture interprets raw mouse movement
+// Interprets raw mouse data
 func DetectGesture(xMove, yMove int8, leftButtonPressed bool) Gesture {
     var gestureType string
 

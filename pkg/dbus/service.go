@@ -2,10 +2,8 @@ package dbus
 
 import (
     "fmt"
-    "time"
     "github.com/godbus/dbus/v5"
 	"github.com/godbus/dbus/v5/introspect"
-    "mouse-service/v1/internal/action"
 )
 
 type MouseService struct {
@@ -58,21 +56,32 @@ func RegisterMouseService() (*dbus.Conn, error) {
 }
 
 // Actions
+func MapGestureToAction(gesture string) (string, error) {
+    fmt.Println("Mapping gesture:", gesture)
+    return "action_" + gesture, nil
+}
+
+func ExecuteAction(action string) error {
+    fmt.Println("Executing action:", action)
+    return nil
+}
 
 func (a *ActionService) ReceiveGesture(gesture string) *dbus.Error {
-    fmt.Printf("Received gesture: %s\n", gesture)
-
-    mappedAction, err := action.MapGestureToAction(gesture)
+    fmt.Println("=== ReceiveGesture method called with gesture:", gesture)
+    
+    mappedAction, err := MapGestureToAction(gesture)
     if err != nil {
         fmt.Println("Error mapping gesture:", err)
-        return nil
+        return dbus.MakeFailedError(err)
     }
 
-    err = action.ExecuteAction(mappedAction)
+    err = ExecuteAction(mappedAction)
     if err != nil {
         fmt.Println("Error executing action:", err)
+        return dbus.MakeFailedError(err)
     }
 
+    fmt.Println("Gesture handled successfully:", gesture)
     return nil
 }
 
@@ -82,20 +91,48 @@ func RegisterActionService() (*dbus.Conn, error) {
         return nil, fmt.Errorf("failed to connect to D-Bus: %v", err)
     }
 
-    _, err = conn.RequestName("com.example.ActionService", dbus.NameFlagDoNotQueue)
+    reply, err := conn.RequestName("com.example.ActionService", dbus.NameFlagDoNotQueue)
     if err != nil {
         return nil, fmt.Errorf("failed to request D-Bus name: %v", err)
     }
 
+    fmt.Printf("Action service request name reply: %v\n", reply)
+
+    // Create and export the service
     service := &ActionService{}
-    conn.Export(service, "/com/example/ActionService", "com.example.ActionService")
+    
+    // Export the service interface
+    err = conn.Export(service, "/com/example/ActionService", "com.example.ActionService")
+    if err != nil {
+        return nil, fmt.Errorf("failed to export service: %v", err)
+    }
+    
+    // Create introspection data
+    introspectData := &introspect.Node{
+        Name: "/com/example/ActionService",
+        Interfaces: []introspect.Interface{
+            {
+                Name: "com.example.ActionService",
+                Methods: []introspect.Method{
+                    {
+                        Name: "ReceiveGesture",
+                        Args: []introspect.Arg{
+                            {Name: "gesture", Type: "s", Direction: "in"},
+                        },
+                    },
+                },
+            },
+            introspect.IntrospectData,
+        },
+    }
+    
+    // Export the introspection interface
+    err = conn.Export(introspect.NewIntrospectable(introspectData), "/com/example/ActionService", "org.freedesktop.DBus.Introspectable")
+    if err != nil {
+        return nil, fmt.Errorf("failed to export introspection: %v", err)
+    }
     
     fmt.Println("Action Service registered on D-Bus!")
-
-    go func() {
-        time.Sleep(2 * time.Second)
-        service.ReceiveGesture("click")
-    }()
 
     return conn, nil
 }
