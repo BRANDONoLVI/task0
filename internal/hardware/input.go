@@ -9,7 +9,7 @@ import (
 )
 
 func ReadMouseEvents() {
-    file, err := os.Open("/dev/input/mice") // Open mouse input device
+    file, err := os.Open("/dev/input/mice")
     if err != nil {
         fmt.Println("Error opening device:", err)
         return
@@ -40,9 +40,8 @@ func ReadMouseEvents() {
 
         fmt.Printf("Gesture Detected: %s at (%d, %d)\n", gesture.Type, gesture.Position.X, gesture.Position.Y)
 
-        // Send event over D-Bus
         dbusService.SendMouseEvent(gesture.DeviceID, int32(gesture.Position.X), int32(gesture.Position.Y), gesture.Type)
         //dbusService.SendMouseEvent("mouse_001", int(xMove), int(yMove), "pressed")
-        time.Sleep(50 * time.Millisecond) // Avoid sending excessive events
+        time.Sleep(50 * time.Millisecond) // avoid spammy events
     }
 }

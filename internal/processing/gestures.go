@@ -4,11 +4,11 @@ import (
     "time"
 )
 
-// Gesture represents a standardized user action
+// this is my standardized interface
 type Gesture struct {
     Timestamp int64
     DeviceID  string
-    Type      string // e.g., "click", "drag", "move"
+    Type      string // e.g., click, drag, move
     Position  struct {
         X int8
         Y int8

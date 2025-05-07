@@ -1,0 +1,4 @@
+# Dependencies
+
+xdotool
+dbus
