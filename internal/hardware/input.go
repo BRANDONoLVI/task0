@@ -40,7 +40,7 @@ func ReadMouseEvents() {
 
         gesture := processing.DetectGesture(xMove, yMove, leftButton == 1, rightButton == 1)
 
-        // fmt.Printf("Gesture Detected: %s at (%d, %d)\n", gesture.Type, gesture.Position.X, gesture.Position.Y)
+        //fmt.Printf("Gesture Detected: %s at (%d, %d)\n", gesture.Type, gesture.Position.X, gesture.Position.Y)
 
         dbusService.SendMouseEvent(gesture.DeviceID, int32(gesture.Position.X), int32(gesture.Position.Y), gesture.Type)
         //dbusService.SendMouseEvent("mouse_001", int32(xMove), int32(yMove), "pressed")

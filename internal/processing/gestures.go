@@ -65,8 +65,6 @@ func DetectGesture(xMove, yMove int8, leftButtonPressed, rightButtonPressed bool
         }
     }
 
-    print(gestureType)
-
     return Gesture{
         Timestamp: now,
         DeviceID:  "mouse_001",

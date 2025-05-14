@@ -5,10 +5,13 @@
   "main": "index.js",
   "scripts": {
     "build": "go build -a cmd/server/main.go",
+    "build:client": "go build -a -o client cmd/client/main.go",
     "start": "pnpm build && sudo ./main",
+    "start:client": "pnpm build:client && sudo ./client",
     "test:click": "dbus-send --session --type=method_call --dest=org.luxvitae.ActionService /org/luxvitae/ActionService org.luxvitae.ActionService.ReceiveGesture string:\"click\"",
     "test:move": "dbus-send --session --type=method_call --dest=org.luxvitae.ActionService /org/luxvitae/ActionService org.luxvitae.ActionService.ReceiveGesture string:\"move\"",
     "test:minimize": "dbus-send --session --type=method_call --dest=org.luxvitae.ActionService /org/luxvitae/ActionService org.luxvitae.ActionService.ReceiveGesture string:\"minimize\"",
+    "test:double_click": "dbus-send --session --type=method_call --dest=org.luxvitae.ActionService /org/luxvitae/ActionService org.luxvitae.ActionService.ReceiveGesture string:\"double_click\"",
     "kill": "kill -9"
   },
   "keywords": [],
