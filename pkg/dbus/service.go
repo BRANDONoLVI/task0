@@ -34,7 +34,7 @@ func (m *MouseService) SendMouseEvent(deviceID string, x, y int32, button string
 }
 
 func (m *MouseService) SendEvent(deviceID string, x int, y int, button string) *dbus.Error {
-    fmt.Printf("Mouse Event Received: Device=%s X=%d Y=%d Button=%s\n", deviceID, x, y, button)
+    //fmt.Printf("Mouse Event Received: Device=%s X=%d Y=%d Button=%s\n", deviceID, x, y, button)
     return nil
 }
 
