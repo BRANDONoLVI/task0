@@ -12,6 +12,9 @@
     "test:move": "dbus-send --session --type=method_call --dest=org.luxvitae.ActionService /org/luxvitae/ActionService org.luxvitae.ActionService.ReceiveGesture string:\"move\"",
     "test:minimize": "dbus-send --session --type=method_call --dest=org.luxvitae.ActionService /org/luxvitae/ActionService org.luxvitae.ActionService.ReceiveGesture string:\"minimize\"",
     "test:double_click": "dbus-send --session --type=method_call --dest=org.luxvitae.ActionService /org/luxvitae/ActionService org.luxvitae.ActionService.ReceiveGesture string:\"double_click\"",
+    "test:swipe_left": "dbus-send --session --type=method_call --dest=org.luxvitae.ActionService /org/luxvitae/ActionService org.luxvitae.ActionService.ReceiveGesture string:\"swipe_left\"",
+    "test:swipe_right": "dbus-send --session --type=method_call --dest=org.luxvitae.ActionService /org/luxvitae/ActionService org.luxvitae.ActionService.ReceiveGesture string:\"swipe_right\"",
+
     "kill": "kill -9"
   },
   "keywords": [],

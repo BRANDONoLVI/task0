@@ -26,7 +26,11 @@ func main() {
 	defer conn.Close()
 
     // Read mouse inputs here
-    hardware.ReadMouseEvents()
+    go func() {
+        fmt.Println("Starting to read mouse events...")
+        hardware.ReadMouseEvents()
+    }()
+    
 
     fmt.Println("Service running. Press Ctrl+C to exit.")
     c := make(chan os.Signal, 1)
